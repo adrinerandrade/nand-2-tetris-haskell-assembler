@@ -1,0 +1,53 @@
+# GHC and Stack build artifacts
+/dist
+/dist-*
+/.stack-work/
+/.cabal-sandbox/
+/cabal.sandbox.config
+
+# Cabal new-build
+/dist-newstyle/
+/cabal.project.local
+/cabal.project.local~
+cabal.project.local.new-work-dir
+
+# GHC environment files
+.ghc.environment.*
+.ghc.environment.*.bak
+
+# Haskell Language Server (HLS)
+.hie/
+.hie-bios/
+.hie/
+.hie-bios/
+.hie/
+*.hie
+*.hi
+*.o
+*.dyn_o
+*.dyn_hi
+
+# Nix
+result/
+.nix-gcroots/
+.nix-result
+
+# Common editors
+*.swp
+*.swo
+*~
+*.tmp
+
+# VSCode
+.vscode/
+
+# Emacs
+*.elc
+*.dir-locals.el
+
+# JetBrains IDEs
+.idea/
+
+# OS-specific
+.DS_Store
+Thumbs.db
