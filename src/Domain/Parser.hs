@@ -1,5 +1,7 @@
-module Domain.Parser () where
-import Domain.Lexer (LexicalAnalysis)
+module Domain.Parser where
+
+import Domain.Lexer (LexicalAnalysis(..))
 
 parse :: LexicalAnalysis -> String
-parse = show
+parse LexicalAnalysis { instructions = ins, symbolTable = symTab } =
+  "Instructions: " ++ show ins ++ "\nSymbols: " ++ show symTab

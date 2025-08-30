@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TupleSections #-}
-module Domain.Lexer(mapInstructions, Instruction(..), LexicalAnalysis, LexemeError) where
+module Domain.Lexer(mapInstructions, Instruction(..), LexicalAnalysis(..), LexemeError) where
 
 import Shared.StringUtils ( Trim(trim) );
 import Shared.CollectionUtils ( distinct );
