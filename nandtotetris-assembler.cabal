@@ -20,9 +20,12 @@ executable nandtotetris-assembler
     Domain.Parser
     Domain.Lexer
     Shared.StringUtils
+    Shared.CollectionUtils
   build-depends:      
+    containers ^>=0.6.7,
     filepath ^>=1.4.301.0,
     base ^>=4.18.3.0,
     text >=1.2 && <2.1,
-    regex-tdfa >=1.3
+    regex-tdfa >=1.3,
+    unordered-containers ^>=0.2.20
   default-language:   Haskell2010

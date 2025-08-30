@@ -1,27 +1,54 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Domain.Lexer(mapInstructions, Instruction(..), LexemeError) where
+{-# LANGUAGE TupleSections #-}
+module Domain.Lexer(mapInstructions, Instruction(..), LexicalAnalysis, LexemeError) where
 
 import Shared.StringUtils ( Trim(trim) );
+import Shared.CollectionUtils ( distinct );
 import Control.Exception (Exception)
 import Text.Regex.TDFA ((=~))
+import qualified Data.HashMap.Strict as HM
 
-newtype LexemeError = LexemeError String
-  deriving (Show, Eq)
+newtype LexemeError = LexemeError String deriving (Show, Eq)
+
+type SymbolTable = HM.HashMap String Int  
+type LabelTable = HM.HashMap String Int
+type Variables = [String]
+
+data LexicalAnalysis = LexicalAnalysis
+  { 
+    instructions :: [Instruction],
+    symbolTable  :: SymbolTable
+  } deriving (Show, Eq)
 
 instance Exception LexemeError
 
-mapInstructions :: [String] -> Either LexemeError [Instruction]
-mapInstructions = _mapInstructions []
+mapInstructions :: [String] -> Either LexemeError LexicalAnalysis
+mapInstructions = _mapInstructions [] [] HM.empty
 
-_mapInstructions :: [Instruction] -> [String] -> Either LexemeError [Instruction]
-_mapInstructions ins [] = Right (reverse ins)
-_mapInstructions ins (c:cs) =
-  case buildInstruction c of
+_mapInstructions :: [Instruction] -> Variables -> LabelTable -> [String] -> Either LexemeError LexicalAnalysis
+_mapInstructions ins vars lt [] = Right (LexicalAnalysis (reverse ins) (createSymbolTable (reverse vars) lt))
+_mapInstructions ins vars lt (c:cs) =
+  case buildInstruction c ins vars lt of
       Left e         -> Left e
-      Right (Just i) -> _mapInstructions (i:ins) cs
-      Right Nothing  -> _mapInstructions ins cs
+      Right (Just i, resultVars, resultingSt) -> _mapInstructions (i:ins) resultVars resultingSt cs
+      Right (Nothing, resultVars, resultingSt) -> _mapInstructions ins resultVars resultingSt cs
 
-buildInstruction :: String -> Either LexemeError (Maybe Instruction)
+createSymbolTable :: Variables -> LabelTable -> SymbolTable
+createSymbolTable vars lt = HM.union lt (varsTable vars)
+  where
+    varsTable :: Variables -> SymbolTable
+    varsTable = fixedMappings . fromVars
+
+    fixedMappings :: SymbolTable -> SymbolTable
+    fixedMappings = HM.insert "SCREEN" 323132 . HM.insert "KEYBOARD" 31231
+
+    fromVars :: Variables -> SymbolTable
+    fromVars vs = HM.fromList $ zip (distinct (getDefaultVariables ++ vs)) [0..]
+
+getDefaultVariables :: Variables
+getDefaultVariables = [ "R" ++ show i | i <- [0..15 :: Int] ]
+
+buildInstruction :: String -> [Instruction] -> Variables -> LabelTable -> Either LexemeError (Maybe Instruction, Variables, LabelTable)
 buildInstruction = identifyInstruction . sanitize
 
 sanitize :: String -> String
@@ -39,33 +66,42 @@ removeComments (c:cs)
 data Instruction = 
     AInstruction String |
     CInstruction String |
-    Symbol String
+    Label String
     deriving (Show, Eq);
 
-identifyInstruction :: String -> Either LexemeError (Maybe Instruction)
-identifyInstruction [] = Right Nothing
-identifyInstruction s@(c:cs)
-    | c == '@' = buildAInstruction cs
-    | c == '(' = buildSymbol cs
-    | otherwise = buildCInstruction s
+identifyInstruction :: String -> [Instruction] -> Variables -> LabelTable -> Either LexemeError (Maybe Instruction, Variables, LabelTable)
+identifyInstruction [] _ vars st = Right (Nothing, vars, st)
+identifyInstruction s@(c:cs) ins vars lt
+    | c == '@' = buildAInstruction cs vars lt
+    | c == '(' = buildLabel cs ins vars lt
+    | otherwise = fmap (, vars, lt) (buildCInstruction s)
 
-buildAInstruction :: String -> Either LexemeError (Maybe Instruction)
-buildAInstruction [] = Left (LexemeError "Error parsing A instruction. No name after @ found.")
-buildAInstruction name = Right $ Just (AInstruction name)
+buildAInstruction :: String -> Variables -> LabelTable -> Either LexemeError (Maybe Instruction, Variables, LabelTable)
+buildAInstruction [] _ _ = Left (LexemeError "Error parsing A instruction. No name after @ found.")
+buildAInstruction name vars lt = 
+  if name `HM.member` lt then
+      Right (Just $ AInstruction name, vars, lt)
+  else
+      Right (Just $ AInstruction name, name:vars, lt)
 
 buildCInstruction :: String -> Either LexemeError (Maybe Instruction)
 buildCInstruction [] = Left (LexemeError "Error parsing C instruction. No name content found.")
 buildCInstruction code = Right $ Just (CInstruction code)
 
--- Symbols
-symbolRegex :: String
-symbolRegex = "^([a-zA-Z_]+)\\)$"
+-- Labels
+labelRegex :: String
+labelRegex = "^([a-zA-Z_]+)\\)$"
 
-buildSymbol :: String -> Either LexemeError (Maybe Instruction)
-buildSymbol s = fmap (Just . Symbol) (parseSymbol s)
+buildLabel :: String -> [Instruction] -> Variables -> LabelTable -> Either LexemeError (Maybe Instruction, Variables, LabelTable)
+buildLabel s ins vars lt = do
+    l <- parseLabel s
+    if l `HM.member` lt then
+      Left (LexemeError ("Label already exists: " ++ s))
+    else
+      Right (Just $ Label l, filter (/= l) vars, HM.insert l (length ins) lt)
 
-parseSymbol :: String -> Either LexemeError String
-parseSymbol s =
-  case (s =~ symbolRegex :: (String, String, String, [String])) of
+parseLabel :: String -> Either LexemeError String
+parseLabel s =
+  case (s =~ labelRegex :: (String, String, String, [String])) of
     (_, _, _, [inner]) -> Right inner
-    _                  -> Left (LexemeError ("Error parsing symbol. It should be a letters or underscore only encapsulated by parentheshis. Example: (LOOP). Symbol: " ++ s))
+    _                  -> Left (LexemeError ("Error parsing label. It should be a letters or underscore only encapsulated by parentheshis. Example: (LOOP). Label: " ++ s))
