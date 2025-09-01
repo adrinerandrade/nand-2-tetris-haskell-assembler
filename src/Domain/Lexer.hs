@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TupleSections #-}
-module Domain.Lexer(mapInstructions, Instruction(..), LexicalAnalysis(..), LexemeError) where
+module Domain.Lexer(mapInstructions, Instruction(..), LexicalAnalysis(..), LexemeError, SymbolTable) where
 
 import Shared.StringUtils ( Trim(trim) );
 import Shared.CollectionUtils ( distinct );
@@ -96,12 +96,12 @@ buildLabel :: String -> [Instruction] -> Variables -> LabelTable -> Either Lexem
 buildLabel s ins vars lt = do
     l <- parseLabel s
     if l `HM.member` lt then
-      Left (LexemeError ("Label already exists: " ++ s))
+      Left (LexemeError $ "Label already exists: " ++ s)
     else
-      Right (Just $ Label l, filter (/= l) vars, HM.insert l (length ins) lt)
+      Right (Nothing, filter (/= l) vars, HM.insert l (length ins) lt)
 
 parseLabel :: String -> Either LexemeError String
 parseLabel s =
   case (s =~ labelRegex :: (String, String, String, [String])) of
     (_, _, _, [inner]) -> Right inner
-    _                  -> Left (LexemeError ("Error parsing label. It should be a letters or underscore only encapsulated by parentheshis. Example: (LOOP). Label: " ++ s))
+    _                  -> Left (LexemeError $ "Error parsing label. It should be a letters or underscore only encapsulated by parentheshis. Example: (LOOP). Label: " ++ s)

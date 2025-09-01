@@ -5,6 +5,7 @@ module Shared.StringUtils where
 import Data.Char (isSpace)
 import Data.List (dropWhileEnd)
 import qualified Data.Text as T
+import Text.Printf (printf)
 
 class Trim a where
   trim      :: a -> a
@@ -22,3 +23,6 @@ instance Trim T.Text where
   trim      = T.strip
   trimStart = T.stripStart
   trimEnd   = T.stripEnd
+
+toBinary15 :: Int -> String
+toBinary15 = printf "%015b"
