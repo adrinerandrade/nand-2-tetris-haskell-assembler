@@ -40,7 +40,7 @@ createSymbolTable vars lt = HM.union lt (varsTable vars)
     varsTable = fixedMappings . fromVars
 
     fixedMappings :: SymbolTable -> SymbolTable
-    fixedMappings = HM.insert "SCREEN" 323132 . HM.insert "KEYBOARD" 31231
+    fixedMappings = HM.insert "SCREEN" 16384 . HM.insert "KEYBOARD" 24576
 
     fromVars :: Variables -> SymbolTable
     fromVars vs = HM.fromList $ zip (distinct (getDefaultVariables ++ vs)) [0..]
