@@ -1,0 +1,1 @@
+`cabal run nandtotetris-assembler -- ./instructions/mult.asm`

@@ -16,9 +16,9 @@ executable nandtotetris-assembler
   main-is:            Main.hs
   hs-source-dirs:     src
   other-modules:
-    Domain.Instruction
     Domain.Parser
     Domain.Lexer
+    Infrastructure.Instruction
     Shared.StringUtils
     Shared.CollectionUtils
   build-depends:      
