@@ -1,10 +1,10 @@
 {-# LANGUAGE InstanceSigs #-}
-module Infrastructure.Instruction (InstructionRepository(loadInstructionSet)) where
+module Infrastructure.Repository (Repository(loadInstructionSet)) where
 
-class Monad m => InstructionRepository m where
+class Monad m => Repository m where
     loadInstructionSet :: String -> m [String]
 
-instance InstructionRepository IO where
+instance Repository IO where
     loadInstructionSet :: String -> IO [String]
     loadInstructionSet filePath = do
         fileContent <- readFile filePath

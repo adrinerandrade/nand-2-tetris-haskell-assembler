@@ -18,7 +18,11 @@ executable nandtotetris-assembler
   other-modules:
     Domain.Parser
     Domain.Lexer
-    Infrastructure.Instruction
+    Domain.Lexemes.Instructions
+    Domain.Lexemes.CInstruction
+    Domain.Lexemes.Label
+    Domain.Model.Lexical
+    Infrastructure.Repository
     Shared.StringUtils
     Shared.CollectionUtils
   build-depends:      

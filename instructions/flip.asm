@@ -20,7 +20,7 @@
 	D=M
 	@R0
 	M=D      // R0 = temp
-	
+
   (END)
 	@END
 	0;JMP

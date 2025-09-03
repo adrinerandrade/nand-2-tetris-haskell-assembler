@@ -1,7 +1,7 @@
 module Main where 
 
 import System.Environment (getArgs)
-import Infrastructure.Instruction (InstructionRepository(loadInstructionSet))
+import Infrastructure.Repository (Repository(loadInstructionSet))
 import Domain.Parser (parse)
 import Domain.Lexer (mapInstructions)
 
