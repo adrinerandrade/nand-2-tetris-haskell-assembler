@@ -8,8 +8,14 @@ type LabelTable = HM.HashMap String Int
 type Variables = [String]
 newtype LexemeError = LexemeError String deriving (Show, Eq)
 instance Exception LexemeError
+
+data AValue
+    = Variable String
+    | AbsoluteValue Int
+    deriving (Show, Eq)
+
 data Instruction = 
-    AInstruction String |
+    AInstruction AValue |
     CInstruction String String String
     deriving (Show, Eq);
 

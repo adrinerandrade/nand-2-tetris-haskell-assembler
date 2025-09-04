@@ -19,6 +19,7 @@ executable nandtotetris-assembler
     Domain.Parser
     Domain.Lexer
     Domain.Lexemes.Instructions
+    Domain.Lexemes.AInstruction
     Domain.Lexemes.CInstruction
     Domain.Lexemes.Label
     Domain.Model.Lexical
