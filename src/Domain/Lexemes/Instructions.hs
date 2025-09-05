@@ -5,6 +5,7 @@ import Domain.Model.Lexical
 import qualified Data.HashMap.Strict as HM
 import Shared.StringUtils ( Trim(trim) );
 import Domain.Lexemes.CInstruction (buildCInstruction)
+import Domain.Lexemes.AInstruction (buildAInstruction)
 import Domain.Lexemes.Label(parseLabel)
 
 buildInstruction :: String -> [Instruction] -> Variables -> LabelTable -> Either LexemeError (Maybe Instruction, Variables, LabelTable)
@@ -34,9 +35,9 @@ processAInstruction :: String -> Variables -> LabelTable -> Either LexemeError (
 processAInstruction [] _ _ = Left (LexemeError "Error parsing A instruction. No name after @ found.")
 processAInstruction name vars lt = 
   if name `HM.member` lt then
-      Right (Just $ AInstruction name, vars, lt)
+      fmap ((, vars, lt) . Just) (buildAInstruction name)
   else
-      Right (Just $ AInstruction name, name:vars, lt)
+      fmap ((, name:vars, lt) . Just) (buildAInstruction name)
 
 processLabel :: String -> [Instruction] -> Variables -> LabelTable -> Either LexemeError (Maybe Instruction, Variables, LabelTable)
 processLabel s ins vars lt = do

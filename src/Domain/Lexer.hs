@@ -24,7 +24,7 @@ _mapInstructions ins vars lt (c:cs) =
       Right (Nothing, resultVars, resultingSt) -> _mapInstructions ins resultVars resultingSt cs
 
 createSymbolTable :: Variables -> LabelTable -> SymbolTable
-createSymbolTable vars lt = HM.union lt (varsTable vars)
+createSymbolTable vars = HM.union (varsTable vars)
   where
     varsTable :: Variables -> SymbolTable
     varsTable = fixedMappings . fromVars
