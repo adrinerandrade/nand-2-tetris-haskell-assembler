@@ -2,7 +2,7 @@ module Main where
 
 import System.Environment (getArgs)
 import Infrastructure.Repository (Repository(loadInstructionSet))
-import Domain.Parser (parse)
+import Domain.Parsing.Parser (parse)
 import Domain.Lexer (mapInstructions)
 
 main :: IO ()

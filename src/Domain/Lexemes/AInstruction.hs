@@ -17,4 +17,4 @@ buildAInstruction str =
             Right (AInstruction $ Variable varName)
         
         _ ->
-            Left (LexemeError $ "Invalid AInstruction declaration. It should respect the following pattern: " ++ aInstructionRegex ++ ". Instruction: " ++ str)
+            Left (LexemeError $ "Invalid A-Instruction declaration. It should respect the following pattern: " ++ aInstructionRegex ++ ". Instruction: " ++ str)

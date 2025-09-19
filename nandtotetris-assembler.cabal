@@ -16,13 +16,15 @@ executable nandtotetris-assembler
   main-is:            Main.hs
   hs-source-dirs:     src
   other-modules:
-    Domain.Parser
+    Domain.Parsing.Parser
+    Domain.Parsing.CInstructionParser
     Domain.Lexer
     Domain.Lexemes.Instructions
     Domain.Lexemes.AInstruction
     Domain.Lexemes.CInstruction
     Domain.Lexemes.Label
     Domain.Model.Lexical
+    Domain.Model.Parsing
     Infrastructure.Repository
     Shared.StringUtils
     Shared.CollectionUtils
