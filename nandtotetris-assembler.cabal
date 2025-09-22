@@ -17,6 +17,7 @@ executable nandtotetris-assembler
   hs-source-dirs:     src
   other-modules:
     Domain.Parsing.Parser
+    Domain.Parsing.AInstructionParser
     Domain.Parsing.CInstructionParser
     Domain.Lexer
     Domain.Lexemes.Instructions

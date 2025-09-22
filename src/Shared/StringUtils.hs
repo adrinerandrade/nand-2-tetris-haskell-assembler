@@ -26,3 +26,6 @@ instance Trim T.Text where
 
 toBinary15 :: Int -> String
 toBinary15 = printf "%015b"
+
+toBinaryInstruction :: Int -> String
+toBinaryInstruction i = '0' : toBinary15 i

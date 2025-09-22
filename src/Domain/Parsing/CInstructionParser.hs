@@ -1,7 +1,12 @@
-module Domain.Parsing.CInstructionParser where
+module Domain.Parsing.CInstructionParser(parseCInstruction) where
 
 import Domain.Model.Parsing
 import Data.Bits ( (.|.) )
+
+parseCInstruction :: String -> String -> String -> Either ParserError String
+parseCInstruction dest cmp jmp = translateDest dest
+
+
 
 translateDest :: String -> Either ParserError String
 translateDest [] = Right "000"
