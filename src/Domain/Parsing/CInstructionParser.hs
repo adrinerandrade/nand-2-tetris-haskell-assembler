@@ -4,9 +4,7 @@ import Domain.Model.Parsing
 import Data.Bits ( (.|.) )
 
 parseCInstruction :: String -> String -> String -> Either ParserError String
-parseCInstruction dest cmp jmp = translateDest dest
-
-
+parseCInstruction dest cmp jmp = fmap concat (sequenceA [translateDest dest, translateJmp jmp])
 
 translateDest :: String -> Either ParserError String
 translateDest [] = Right "000"
@@ -30,3 +28,14 @@ _translateDest d = case d of
 
 orLists :: [Int] -> [Int] -> [Int]
 orLists = zipWith (.|.)
+
+translateJmp :: String -> Either ParserError String
+translateJmp [] = Right "000"
+translateJmp "JGT" = Right "001"
+translateJmp "JEQ" = Right "010"
+translateJmp "JGE" = Right "011"
+translateJmp "JLT" = Right "100"
+translateJmp "JNE" = Right "101"
+translateJmp "JLE" = Right "110"
+translateJmp "JMP" = Right "111"
+translateJmp cs     = Left (ParserError $ "Invalid jump instruction: " ++ cs)
