@@ -4,7 +4,7 @@ import Domain.Model.Parsing
 import Data.Bits ( (.|.) )
 
 parseCInstruction :: String -> String -> String -> Either ParserError String
-parseCInstruction dest cmp jmp = fmap concat (sequenceA [translateDest dest, translateJmp jmp])
+parseCInstruction dest cmp jmp = fmap concat (sequenceA [translateDest dest, translateComputation cmp, translateJmp jmp])
 
 translateDest :: String -> Either ParserError String
 translateDest [] = Right "000"
@@ -28,6 +28,22 @@ _translateDest d = case d of
 
 orLists :: [Int] -> [Int] -> [Int]
 orLists = zipWith (.|.)
+
+translateComputation :: String -> Either ParserError String
+translateComputation "0" = Right "0101010" -- a=0
+translateComputation "1" = Right "0111111" -- a=0
+translateComputation "D" = Right "0001100" -- a=0
+translateComputation "A" = Right "0110000" -- a=0
+translateComputation "M" = Right "1110000" -- a=1
+translateComputation ('-':cs) = case cs of
+  "1" -> Right "0111010" -- a=0
+  "D" -> Right "0001111" -- a=0
+  "A" -> Right "0110011" -- a=0
+  "M" -> Right "1110011" -- a=1
+  neg  -> Left (ParserError $ "Invalid negate instruction: -" ++ neg)
+
+-- error
+translateComputation cs     = Left (ParserError $ "Invalid computation instruction: " ++ cs)
 
 translateJmp :: String -> Either ParserError String
 translateJmp [] = Right "000"
