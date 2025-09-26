@@ -27,13 +27,25 @@ createSymbolTable :: Variables -> LabelTable -> SymbolTable
 createSymbolTable vars = HM.union (varsTable vars)
   where
     varsTable :: Variables -> SymbolTable
-    varsTable = fixedMappings . fromVars
+    varsTable vs = HM.union (fromVars fixedMappings vs) fixedMappings
 
-    fixedMappings :: SymbolTable -> SymbolTable
-    fixedMappings = HM.insert "SCREEN" 16384 . HM.insert "KEYBOARD" 24576
+    fixedMappings :: SymbolTable
+    fixedMappings = 
+      HM.fromList [
+        ("SCREEN", 16384),
+        ("KBD", 24576),
+        ("SP", 0),
+        ("LCL", 1),
+        ("ARG", 2),
+        ("THIS", 3),
+        ("THAT", 4)
+      ]
 
-    fromVars :: Variables -> SymbolTable
-    fromVars vs = HM.fromList $ zip (distinct (getDefaultVariables ++ vs)) [0..]
+    fromVars :: SymbolTable -> Variables -> SymbolTable
+    fromVars fixedSymbols _vars = HM.fromList $ zip (distinct (getDefaultVariables ++ sanitizedVars fixedSymbols _vars)) [0..]
+
+sanitizedVars :: SymbolTable -> Variables -> Variables
+sanitizedVars fixedSymbols = filter (\ v -> not (HM.member v fixedSymbols))
 
 getDefaultVariables :: Variables
 getDefaultVariables = [ "R" ++ show i | i <- [0..15 :: Int] ]

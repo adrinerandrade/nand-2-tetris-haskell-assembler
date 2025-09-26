@@ -4,7 +4,7 @@ import Domain.Model.Lexical
 import Text.Regex.TDFA ((=~))
 
 cInstructionRegex :: String
-cInstructionRegex = "^(([ADM][ADM]?[ADM]?)=)?([ADM\\+\\-\\|&!01]+)(;([JNLEQGTMP][JNLEQGTMP][JNLEQGTMP]))?$"
+cInstructionRegex = "^(([ADM][ADM]?[ADM]?)=)?([ADM01+|&!-]+)(;([JNLEQGTMP][JNLEQGTMP][JNLEQGTMP]))?$"
 
 buildCInstruction :: String -> Either LexemeError Instruction
 buildCInstruction text = case text =~ cInstructionRegex :: (String, String, String, [String]) of

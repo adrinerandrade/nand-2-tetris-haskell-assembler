@@ -1,7 +1,7 @@
 module Main where 
 
 import System.Environment (getArgs)
-import Infrastructure.Repository (Repository(loadInstructionSet))
+import Infrastructure.Repository (Repository(loadInstructionSet, saveBinaries))
 import Domain.Parsing.Parser (parse)
 import Domain.Lexer (mapInstructions)
 
@@ -15,6 +15,6 @@ main = do
                 Left err -> putStrLn $ "Lexical analysis failed: " ++ show err
                 Right lexicalResult -> case parse lexicalResult of
                     Left err -> putStrLn $ "Parsing failed: " ++ show err
-                    Right binaries -> print binaries
+                    Right binaries -> saveBinaries filePath binaries
 
         _ -> putStrLn "Usage: cabal run nandtotetris-assembler -- <Asm File Path>"

@@ -4,7 +4,7 @@ import Domain.Model.Parsing
 import Data.Bits ( (.|.) )
 
 parseCInstruction :: String -> String -> String -> Either ParserError String
-parseCInstruction dest cmp jmp = fmap (("111" ++) . concat) (sequenceA [translateDest dest, translateComputation cmp, translateJmp jmp])
+parseCInstruction dest cmp jmp = fmap (("111" ++) . concat) (sequenceA [translateComputation cmp, translateDest dest, translateJmp jmp])
 
 translateDest :: String -> Either ParserError String
 translateDest [] = Right "000"
@@ -78,7 +78,7 @@ translateComputation s@('D':op) = case op of
 translateComputation s@('A':op) = translateAddressComputation s "A" 0 op
 
 -- M computations
-translateComputation s@('M':op) = translateAddressComputation s "M" 0 op
+translateComputation s@('M':op) = translateAddressComputation s "M" 1 op
 
 -- error
 translateComputation cs     = Left (ParserError $ "Invalid computation instruction: " ++ cs)
